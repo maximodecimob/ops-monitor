@@ -134,7 +134,8 @@ function render() {
   const meter = (label, v, txt) => h("div", { class: "meter" }, h("span", null, label), h("b", { class: "num" }, txt),
     h("div", { class: "bar" }, h("i", { class: v > 0.85 ? "hi" : "", style: `width:${Math.min(100, v * 100).toFixed(0)}%` })));
   $("system").replaceChildren(h("h2", null, "Servidor"), h("div", { class: "meters", style: "margin-top:10px" },
-    meter("CPU", s.load1 / s.cpus, `${((s.load1 / s.cpus) * 100).toFixed(0)} %`),
+    s.cpu_pct == null ? h("div", { class: "meter" }, h("span", null, "CPU"), h("b", null, "—"))
+                      : meter("CPU", s.cpu_pct, `${(s.cpu_pct * 100).toFixed(0)} %`),
     meter("Memoria", s.mem_pct, `${(s.mem_pct * 100).toFixed(0)} %`),
     meter("Disco", s.disk_pct, `${(s.disk_pct * 100).toFixed(0)} %`),
     h("div", { class: "meter" }, h("span", null, "Encendido"), h("b", { class: "num" }, `${(s.uptime_s / 86400).toFixed(1)} días`))));
@@ -163,12 +164,11 @@ function account(a) {
     h("h3", null, "Riesgo"),
     h("div", { class: "meters" },
       h("div", { class: "meter" }, h("span", null, "Pérdida del día / límite"),
-        h("b", { class: "num" }, `${pct(t.day_drawdown)} / ${pct(t.day_drawdown_limit)}`),
+        h("b", { class: "num" }, `${(t.day_drawdown * 100).toFixed(2)} % de ${(t.day_drawdown_limit * 100).toFixed(2)} %`),
         h("div", { class: "bar" }, h("i", { class: dd > 0.7 ? "hi" : "", style: `width:${(dd * 100).toFixed(0)}%` }))),
-      h("div", { class: "meter" }, h("span", null, "Exposición bruta"), h("b", { class: "num" }, money(t.gross))),
-      h("div", { class: "meter" }, h("span", null, "Exposición neta"), h("b", { class: "num" }, money(t.net))),
-      h("div", { class: "meter" }, h("span", null, "Régimen"), h("b", null, t.regime || "—"))),
-    h("h3", null, "Estrategias"), table(["Estrategia", "Salud", "Ops", "P&L", "Rent."], t.strategies,
+      h("div", { class: "meter" }, h("span", null, "Apalancamiento bruto"), h("b", { class: "num" }, `${t.gross.toFixed(2)}x`)),
+      h("div", { class: "meter" }, h("span", null, "Apalancamiento neto"), h("b", { class: "num" }, `${t.net.toFixed(2)}x`))),
+    h("h3", null, "Estrategias"), table(["Estrategia", "Salud", "Ops cerradas", "P&L", "Rent."], t.strategies,
       (s) => [s.name, status(HEALTH, s.health), s.trades, signed(s.pnl), pct(s.return_pct)]),
     h("h3", null, "Posiciones abiertas"), table(["Instrumento", "Estrategia", "Nocional", "P&L no real."], t.positions,
       (p) => [p.instrument, p.strategy, money(p.signed_notional), signed(p.unrealized_pnl)]),
