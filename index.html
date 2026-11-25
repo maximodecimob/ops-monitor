@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; manifest-src 'self'; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; base-uri 'none'; form-action 'none'; require-trusted-types-for 'script'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#1a1a19">
+<title>Monitor</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<script src="app.js" defer></script>
+</head>
+<body>
+<main id="lock" class="lock" hidden>
+  <form id="unlock" class="card">
+    <h1>Monitor</h1>
+    <p class="muted">Solo lectura. Introduce la contraseña del monitor.</p>
+    <input id="pass" type="password" autocomplete="current-password" required minlength="14" aria-label="Contraseña">
+    <button type="submit">Entrar</button>
+    <p id="lockmsg" class="msg" role="alert"></p>
+  </form>
+</main>
+<main id="app" hidden>
+  <header class="top">
+    <div><h1>Monitor</h1><span id="age" class="muted"></span></div>
+    <button id="logout" class="ghost" type="button">Salir</button>
+  </header>
+  <p id="stale" class="banner" hidden></p>
+  <section id="total" class="card"></section>
+  <section id="system" class="card"></section>
+  <div id="accounts"></div>
+</main>
+</body>
+</html>
