@@ -131,13 +131,17 @@ function render() {
   $("total").replaceChildren(h("span", { class: "muted" }, "Capital total"),
     h("div", { class: "hero num" }, money(snap.total.equity)), periods(snap.total.periods));
   const s = snap.system || {};
-  const meter = (label, v, txt) => h("div", { class: "meter" }, h("span", null, label), h("b", { class: "num" }, txt),
-    h("div", { class: "bar" }, h("i", { class: v > 0.85 ? "hi" : "", style: `width:${Math.min(100, v * 100).toFixed(0)}%` })));
+  const meter = (label, used, total, fmt) => used == null || !total
+    ? h("div", { class: "meter" }, h("span", null, label), h("b", null, "—"))
+    : h("div", { class: "meter" }, h("span", null, label), h("b", { class: "num" }, `${fmt(used)} / ${fmt(total)}`),
+      h("div", { class: "bar" }, h("i", { class: used / total > 0.85 ? "hi" : "",
+        style: `width:${Math.min(100, used / total * 100).toFixed(0)}%` })));
+  const gb = (b) => b >= 1e12 ? `${(b / 1e12).toFixed(2)} TB` : `${(b / 1e9).toFixed(1)} GB`;
+  const cores = (c) => `${c.toFixed(c % 1 ? 2 : 0)} núcleos`;
   $("system").replaceChildren(h("h2", null, "Servidor"), h("div", { class: "meters", style: "margin-top:10px" },
-    s.cpu_pct == null ? h("div", { class: "meter" }, h("span", null, "CPU"), h("b", null, "—"))
-                      : meter("CPU", s.cpu_pct, `${(s.cpu_pct * 100).toFixed(0)} %`),
-    meter("Memoria", s.mem_pct, `${(s.mem_pct * 100).toFixed(0)} %`),
-    meter("Disco", s.disk_pct, `${(s.disk_pct * 100).toFixed(0)} %`),
+    meter("CPU", s.cpu_cores_used, s.cpu_cores, cores),
+    meter("Memoria", s.mem_used_b, s.mem_total_b, gb),
+    meter("Disco", s.disk_used_b, s.disk_total_b, gb),
     h("div", { class: "meter" }, h("span", null, "Encendido"), h("b", { class: "num" }, `${(s.uptime_s / 86400).toFixed(1)} días`))));
   $("accounts").replaceChildren(...snap.accounts.map(account));
 }
